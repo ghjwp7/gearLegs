@@ -3,7 +3,7 @@ OpenSCAD models of mostly-planar parts like gears and legs.
 
 spinboxLegs.py uses PyQt (Python Qt5 API) to set up a GUI window for
 inputting via spinboxes (see below) six parameters that control the
-shape of a leg, in this case an ovoid shape bounded by four
+shape of a leg, in this case an oval shape bounded by four
 arcs-of-circles.  Large upper and lower circles intersect to form a
 lens; small circles are created in the lens and tangent to it.
 
