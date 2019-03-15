@@ -80,14 +80,13 @@ class CallData:
 class ArmParams:
     '''Class with data and methods to make an oval arm.
 
-    Let C(r,x,y) stand for a circle with radius r and center (x,y).
-    Also, let p > q > 0 > s > t, and u > 0 > w. In this program, an
-    Arm is a truncated-crescent shape, bounded by arcs of four
-    circles: an upper arc, part of C(p-s, 0, p); a lower arc, part of
-    C(q-t, 0, t); a left arc, part of C(rl, w, vl); and a right arc,
-    part of C(rr, u, vr).  For the left and right arcs, rr, rl, vr, vl
-    are chosen so that the left and right circles are tangent to the
-    lens formed by the intersection of the upper and lower circles.'''
+    Let C(r,x,y) be a circle of radius r with center (x,y).  In this
+    program, an oval Arm has parameters p > q > 0 > s > t and u > 0 > w
+    and is bounded by arcs of four circles: an upper arc of C(p-s, 0,
+    p); a lower arc of C(q-t, 0, t); a left arc of C(rl, w, vl); and a
+    right arc of C(rr, u, vr), with rr, rl, vr, vl such that the small
+    circles are tangent to the lens intersection of the large circles.
+    '''
     def __init__(self, p,q,s,t,u,w):
         self.ready = False
         self.p = p
@@ -110,11 +109,12 @@ class ArmParams:
         Let radii from (0,p) and (0,t) intersect at (u,v).  Let a and
         b be the lengths of the radii left over after intersection.
         So a = r1 - sqrt(u^2+(p-v)^2) and b = r2 - sqrt(u^2+(t-v)^2).
-        We want a(v0) = b(v0).  We solve using Newton iteration then
-        compute r = a(v0).  Note, if f(v) = c - sqrt(u^2+(d-v)^2),
-        then f'(v) = (v-d)/sqrt(u^2+(d-v)^2). Note, closed-form
-        (non-iterative) solutions exist but seem complicated; see eg
-        <https://math.stackexchange.com/q/3145832>        '''
+        We want r = a(v0) = b(v0).  We solve using Newton iteration.
+        Note, if f(v) = c - sqrt(u^2+(d-v)^2), then f'(v) =
+        (v-d)/sqrt(u^2+(d-v)^2). Note, closed-form non-iterative
+        solutions exist but are complicated. Ref: (using p,s,t
+        differently) <https://math.stackexchange.com/q/3145832>
+        '''
         r1, r2, uu = p-s, q-t, u*u
         r1s, r2s = r1**2, r2**2
         # Make initial estimate of v, halfway between y1(u) and y2(u)
