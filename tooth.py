@@ -69,7 +69,7 @@ def spurGear(nT=12, gmodule=3, holeDiam=6.35, gthick=4, pressAngle=28):
     # Compute point at pitch radius, for use as alignment angle  
     x, y = invo(rp)           # (x,y) when involute crosses pitch circle
     alan = atan2(-y, x)        # angle from origin to x,y
-    tang = pi/nTeeth          # angle subtended by one tooth or one gap
+    tang = pi/nTeeth          # angle subtended by one tooth or one gap at rp
     htan = tang/2             # half-tooth angle: 1/4 of pitch angle
     pang = 2*tang             # angle subtended by one tooth + one gap
     nradii = 6
@@ -79,8 +79,16 @@ def spurGear(nT=12, gmodule=3, holeDiam=6.35, gthick=4, pressAngle=28):
     # Rotate half-tooth for proper tooth thickness at pitch circle
     points = rotated(points, alan+htan)
     #print ('Half-tooth points after adjust: ',points)
-    # Mirror tooth top side to bottom
-    bepo = points + [[x,-y] for x,y in reversed(points)]
+    # Curve-rounding in gap.  Note, pang = adel+2*aeps = 2*tang
+    x, y = points[0]; aeps = atan2(y,x); adel = pang-2*aeps
+    g = rr*adel; u = g/20   # adel = angle in gap, g = gap width at rr
+    if g>0:                 # Add 3 points like on an arc
+        curve = [[rr,0],[rr+u,-u*6],[rr+u*3,-u*8]]
+        # Skip first point if it's behind the curve
+        points = rotated(curve,tang) + points[0 if x>rr+u*3 else 1:]
+    #print ('Half-tooth points after curver: ',points)
+    # Mirror tooth top side to bottom (except for center pt of gap)
+    bepo = points + [[x,-y] for x,y in reversed(points[1:])]
     repo = list(reversed(bepo))   # draw up not down
     polyli = []
     for i in range(nT):
@@ -93,7 +101,8 @@ if __name__ == '__main__':
     arn = 0
     arn+=1; nT  = int(argv[arn]) if len(argv)>arn else 20
     arn+=1; gM  = float(argv[arn]) if len(argv)>arn else 3.0
-    print ('Making spurGear(nT:{}, gM:{})'.format(nT,gM))
-    g = spurGear(nT, gM)
+    arn+=1; hD  = float(argv[arn]) if len(argv)>arn else 3.175
+    print ('Making spurGear(nT:{}, gM:{}, hD:{})'.format(nT,gM,hD))
+    g = spurGear(nT, gM, hD)
     scad_render_to_file(g, 'tooth.scad', include_orig_code=False)
     #print ('Wrote scads to tooth.scad')
